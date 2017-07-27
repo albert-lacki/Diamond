@@ -35,6 +35,7 @@ class BindCollector(diamond.collector.Collector):
             " - memory (Global memory usage)\n",
             'publish_view_bind': "",
             'publish_view_meta': "",
+            'publish_zeros': ""
         })
         return config_help
 
@@ -87,7 +88,7 @@ class BindCollector(diamond.collector.Collector):
         if not tree:
             raise ValueError("Corrupt XML file, no statistics found")
 
-        root = tree.getroot() if tree.getroot().tag == 'statistics' else tree.find('statistics')
+        root = tree.getroot() if tree.getroot().tag == 'statistics' else tree.find('//statistics')
         version = int(root.get('version', '').split('.')[0])
 
         if version == 2:
@@ -111,9 +112,9 @@ class BindCollector(diamond.collector.Collector):
                 nzones = len(view.findall('zones/zone'))
                 self.publish('view.%s.zones' % name, nzones)
 
-                for counter in view.findall('counters[@type="resstats"/counter'):
+                for counter in view.findall('counters[@type="resstats"]/counter'):
                     self.clean_counter(
-                        'view.%s.resstats.%s' % (name, counter.get('name')),
+                        'view.%s.resstat.%s' % (name, counter.get('name')),
                         int(counter.text)
                     )
 
